@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  
+  <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f172a">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Routine & Habit Tracker Pro</title>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-color: #38bdf8;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --active-color: #22c55e;
+            --completed-color: #475569;
+            --winddown-bg: rgba(99, 102, 241, 0.15);
+            --winddown-border: #6366f1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding-bottom: 85px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px 15px;
+        }
+
+        header {
+            margin-bottom: 20px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 1.35rem;
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+
+        .streak-badge {
+            background-color: rgba(245, 158, 11, 0.15);
+            border: 1px solid #f59e0b;
+            color: #f59e0b;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Progress Bar */
+        .progress-box {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 15px;
+            margin-top: 15px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+        }
+
+        .progress-bar-bg {
+            background-color: var(--bg-color);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            background-color: var(--active-color);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Habit Trackers Section */
+        .habits-container {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .habit-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .habit-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-grow: 1;
+        }
+
+        .habit-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .habit-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .habit-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .habit-select-type {
+            background: transparent;
+            color: var(--text-color);
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            outline: none;
+            padding: 0;
+            width: 100%;
+        }
+
+        .habit-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-counter {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+
+        .btn-counter:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .habit-count-display {
+            font-size: 0.85rem;
+            font-weight: 700;
+            min-width: 55px;
+            text-align: center;
+        }
+
+        /* Wind-down Banner */
+        .wind-down-banner {
+            background: var(--winddown-bg);
+            border: 1px solid var(--winddown-border);
+            border-radius: 12px;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            display: none;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .wind-down-banner.active {
+            display: flex;
+        }
+
+        .wind-down-text h4 {
+            font-size: 0.9rem;
+            color: #a5b4fc;
+        }
+
+        .wind-down-text p {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        /* Tab Content Views */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Timeline Slot Header & Add Button */
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .timeline-header h2 {
+            font-size: 1.05rem;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-add-time {
+            background-color: var(--card-bg);
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-add-time:hover {
+            background-color: var(--accent-color);
+            color: #000;
+        }
+
+        /* Timeline Slot */
+        .timeline-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .time-slot {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .time-slot.now {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.15);
+        }
+
+        .time-slot.completed {
+            opacity: 0.55;
+            background-color: rgba(30, 41, 59, 0.4);
+        }
+
+        .time-slot.completed .slot-title {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .checkbox-custom {
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+
+        .time-slot.completed .checkbox-custom {
+            background-color: var(--active-color);
+            border-color: var(--active-color);
+            color: #000;
+        }
+
+        .time-label {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--accent-color);
+            min-width: 45px;
+        }
+
+        .slot-content {
+            flex-grow: 1;
+        }
+
+        .slot-header-tags {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 2px;
+        }
+
+        .category-tag {
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* Style Kategori */
+        .tag-routine { background-color: rgba(34, 197, 94, 0.15); color: #4ade80; }
+        .tag-work { background-color: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+        .tag-leisure { background-color: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+        .tag-focus { background-color: rgba(168, 85, 247, 0.15); color: #c084fc; }
+        .tag-target { background-color: rgba(236, 72, 153, 0.15); color: #f472b6; }
+        .tag-ibadah { background-color: rgba(20, 184, 166, 0.15); color: #2dd4bf; }
+
+        .slot-title {
+            font-size: 0.92rem;
+            font-weight: 600;
+        }
+
+        .slot-notes {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .slot-actions {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .btn-edit, .btn-delete-time {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-edit:hover {
+            color: var(--accent-color);
+            background-color: var(--bg-color);
+        }
+
+        .btn-delete-time:hover {
+            color: #ef4444;
+            background-color: var(--bg-color);
+        }
+
+        /* Stat Card & Filter Styles */
+        .filter-container {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .filter-select {
+            width: 100%;
+            padding: 10px 14px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .filter-select:focus {
+            border-color: var(--accent-color);
+        }
+
+        .stat-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .stat-item {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--active-color);
+            margin-top: 4px;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            margin-top: 2px;
+        }
+
+        .habit-summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 500px;
+            background-color: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 90;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            cursor: pointer;
+            width: 33%;
+        }
+
+        .nav-item.active {
+            color: var(--accent-color);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 100;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-content h3 {
+            margin-bottom: 15px;
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+            color: var(--text-muted);
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary { background-color: var(--accent-color); color: #000; }
+        .btn-secondary { background-color: var(--border-color); color: var(--text-color); }
+        .btn-danger { background-color: #ef4444; color: #fff; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <header>
+            <div class="header-top">
+                <h1><i data-lucide="clock"></i> Rutinitas Harian</h1>
+                <div class="streak-badge">
+                    <i data-lucide="flame" style="width: 16px; height: 16px;"></i>
+                    <span id="streakCount">0 Hari</span>
+                </div>
+            </div>
+            <p>Catatan aktivitas harian </p>
+            
+            <div class="progress-box">
+                <div class="progress-header">
+                    <span>Progress Hari Ini</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="progressBar"></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Banner Persiapan Tidur -->
+        <div class="wind-down-banner" id="windDownBanner">
+            <i data-lucide="moon" style="color: #a5b4fc; width: 28px; height: 28px;"></i>
+            <div class="wind-down-text">
+                <h4>Mode Persiapan Tidur Active</h4>
+                <p>Kurangi penggunaan HP & layar. Waktunya rileks sebelum jam 01.00 malam.</p>
+            </div>
+        </div>
+
+        <!-- Tab 1: Timeline & Habit Counters -->
+        <main id="tab-timeline" class="tab-content active">
+            <!-- Habit Counters -->
+            <div class="habits-container" id="habitsContainer">
+                <div class="habit-card">
+                    <div class="habit-info">
+                        <div class="habit-icon"><i data-lucide="droplet" style="width: 18px;"></i></div>
+                        <div>
+                            <div class="habit-title">Minum Air Putih</div>
+                            <div class="habit-subtitle">Target: 8 Gelas</div>
+                        </div>
+                    </div>
+                    <div class="habit-controls">
+                        <button class="btn-counter" onclick="adjustHabit('water', -1)">-</button>
+                        <span class="habit-count-display" id="habit-water-val">0/8</span>
+                        <button class="btn-counter" onclick="adjustHabit('water', 1)">+</button>
+                    </div>
+                </div>
+
+                <div class="habit-card">
+                    <div class="habit-info">
+                        <div class="habit-icon" style="background: rgba(168, 85, 247, 0.1); color: #c084fc;"><i data-lucide="book-open" style="width: 18px;"></i></div>
+                        <div>
+                            <div class="habit-title">Membaca Buku</div>
+                            <div class="habit-subtitle">Target: 15 Halaman</div>
+                        </div>
+                    </div>
+                    <div class="habit-controls">
+                        <button class="btn-counter" onclick="adjustHabit('reading', -1)">-</button>
+                        <span class="habit-count-display" id="habit-reading-val">0/15</span>
+                        <button class="btn-counter" onclick="adjustHabit('reading', 1)">+</button>
+                    </div>
+                </div>
+
+                <div class="habit-card">
+                    <div class="habit-info">
+                        <div class="habit-icon" style="background: rgba(239, 68, 68, 0.1); color: #f87171;"><i data-lucide="apple" style="width: 18px;"></i></div>
+                        <div>
+                            <div class="habit-title">Makan Buah Hari Ini</div>
+                            <div class="habit-subtitle">Target: 2 Porsi</div>
+                        </div>
+                    </div>
+                    <div class="habit-controls">
+                        <button class="btn-counter" onclick="adjustHabit('fruit', -1)">-</button>
+                        <span class="habit-count-display" id="habit-fruit-val">0/2</span>
+                        <button class="btn-counter" onclick="adjustHabit('fruit', 1)">+</button>
+                    </div>
+                </div>
+
+                <div class="habit-card">
+                    <div class="habit-info">
+                        <div class="habit-icon" style="background: rgba(34, 197, 94, 0.1); color: #4ade80;"><i data-lucide="footprints" style="width: 18px;"></i></div>
+                        <div>
+                            <div class="habit-title">Jalan Santai Hari Ini</div>
+                            <div class="habit-subtitle">Target: 6000 Langkah</div>
+                        </div>
+                    </div>
+                    <div class="habit-controls">
+                        <button class="btn-counter" onclick="adjustHabit('steps', -500)">-</button>
+                        <span class="habit-count-display" id="habit-steps-val" style="min-width: 70px;">0/6k</span>
+                        <button class="btn-counter" onclick="adjustHabit('steps', 500)">+</button>
+                    </div>
+                </div>
+
+                <!-- Kartu Olahraga Custom (Fitnes, Badminton, dll.) -->
+                <div class="habit-card">
+                    <div class="habit-info">
+                        <div class="habit-icon" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b;">
+                            <i data-lucide="dumbbell" style="width: 18px;"></i>
+                        </div>
+                        <div style="flex-grow: 1;">
+                            <select id="exerciseTypeSelect" class="habit-select-type" onchange="changeExerciseType(this.value)">
+                                <option value="Fitnes">Olahraga: Fitnes / Gym</option>
+                                <option value="Badminton">Olahraga: Badminton</option>
+                                <option value="Lari / Jogging">Olahraga: Lari / Jogging</option>
+                                <option value="Berenang">Olahraga: Berenang</option>
+                                <option value="Sepakbola / Futsal">Olahraga: Futsal / Bola</option>
+                                <option value="Kustom">Olahraga: Custom (Tulis Saja)</option>
+                            </select>
+                            <div class="habit-subtitle" id="exerciseTargetSubtitle">Target: 1 Jam</div>
+                        </div>
+                    </div>
+                    <div class="habit-controls">
+                        <button class="btn-counter" onclick="adjustHabit('exercise', -0.5)">-</button>
+                        <span class="habit-count-display" id="habit-exercise-val" style="min-width: 65px;">0/1 Jam</span>
+                        <button class="btn-counter" onclick="adjustHabit('exercise', 0.5)">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Header Schedule & Tombol Tambah Waktu -->
+            <div class="timeline-header">
+                <h2><i data-lucide="calendar-days" style="width: 18px;"></i> Jadwal Aktivitas</h2>
+                <button class="btn-add-time" onclick="openAddTimeModal()">
+                    <i data-lucide="plus" style="width: 16px;"></i> Tambah Waktu
+                </button>
+            </div>
+
+            <!-- Schedule Timeline -->
+            <div class="timeline-container" id="timeline"></div>
+        </main>
+
+        <!-- Tab 2: Stats (Statistik & Perhitungan Periode) -->
+        <main id="tab-stats" class="tab-content">
+            <div class="filter-container">
+                <select id="timeRangeFilter" class="filter-select" onchange="renderStats()">
+                    <option value="today">Hari Ini</option>
+                    <option value="yesterday">Kemarin</option>
+                    <option value="week">1 Minggu Terakhir (7 Hari)</option>
+                    <option value="month">1 Bulan Terakhir (30 Hari)</option>
+                    <option value="year">1 Tahun Terakhir (365 Hari)</option>
+                </select>
+
+                <!-- Filter Kategori Tambahan -->
+                <select id="categoryFilter" class="filter-select" onchange="renderStats()">
+                    <option value="all">Semua Kategori</option>
+                    <option value="routine">Rutinitas</option>
+                    <option value="work">Kerja</option>
+                    <option value="leisure">Santai</option>
+                    <option value="focus">Fokus</option>
+                    <option value="target">Target</option>
+                    <option value="ibadah">Ibadah</option>
+                </select>
+            </div>
+
+            <div class="stat-grid">
+                <div class="stat-item">
+                    <i data-lucide="check-circle-2" style="color: var(--active-color);"></i>
+                    <div class="stat-value" id="completedCount">0/0</div>
+                    <p class="stat-label">Agenda Selesai</p>
+                </div>
+                <div class="stat-item">
+                    <i data-lucide="flame" style="color: #f59e0b;"></i>
+                    <div class="stat-value" id="statStreak">0</div>
+                    <p class="stat-label">Streak Konsisten</p>
+                </div>
+            </div>
+
+            <!-- Rekapitulasi Habit Tracker -->
+            <div class="stat-card" style="text-align: left;">
+                <h3 style="font-size: 1rem; margin-bottom: 10px;"><i data-lucide="activity" style="width: 18px;"></i> Total Pencapaian Kebiasaan</h3>
+                <div class="habit-summary-grid">
+                    <div class="stat-item">
+                        <i data-lucide="footprints" style="color: #4ade80;"></i>
+                        <div class="stat-value" id="summarySteps">0</div>
+                        <p class="stat-label">Langkah Jalan</p>
+                    </div>
+                    <div class="stat-item">
+                        <i data-lucide="dumbbell" style="color: #f59e0b;"></i>
+                        <div class="stat-value" id="summaryExercise">0 Jam</div>
+                        <p class="stat-label">Total Olahraga</p>
+                    </div>
+                    <div class="stat-item">
+                        <i data-lucide="apple" style="color: #f87171;"></i>
+                        <div class="stat-value" id="summaryFruit">0</div>
+                        <p class="stat-label">Porsi Buah</p>
+                    </div>
+                    <div class="stat-item">
+                        <i data-lucide="droplet" style="color: #38bdf8;"></i>
+                        <div class="stat-value" id="summaryWater">0</div>
+                        <p class="stat-label">Gelas Air</p>
+                    </div>
+                    <div class="stat-item" style="grid-column: span 2;">
+                        <i data-lucide="book-open" style="color: #c084fc;"></i>
+                        <div class="stat-value" id="summaryReading">0</div>
+                        <p class="stat-label">Halaman Buku</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <h3>Evaluasi Rutinitas</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 8px;" id="evalText">
+                    Gunakan jadwal ini secara bertahap untuk menstabilkan jam tidur malam Anda.
+                </p>
+            </div>
+        </main>
+
+        <!-- Tab 3: Settings & Backup -->
+        <main id="tab-settings" class="tab-content">
+            <div class="stat-card" style="text-align: left;">
+                <h3 style="margin-bottom: 12px;"><i data-lucide="bell" style="width: 18px;"></i> Notifikasi</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 12px;">
+                    Aktifkan notifikasi pengingat untuk jam tidur malam.
+                </p>
+                <button class="btn btn-secondary" onclick="requestNotification()"><i data-lucide="bell-ring" style="width: 16px;"></i> Izinkan Notifikasi</button>
+            </div>
+
+            <div class="stat-card" style="text-align: left;">
+                <h3 style="margin-bottom: 12px;"><i data-lucide="database" style="width: 18px;"></i> Cadangkan Data</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 12px;">
+                    Ekspor atau impor data rutin Anda agar aman dari penghapusan cache.
+                </p>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-secondary" onclick="exportData()"><i data-lucide="download" style="width: 16px;"></i> Ekspor</button>
+                    <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()"><i data-lucide="upload" style="width: 16px;"></i> Impor</button>
+                    <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+                </div>
+            </div>
+
+            <div class="stat-card" style="text-align: left;">
+                <h3 style="margin-bottom: 12px;"><i data-lucide="trash-2" style="width: 18px;"></i> Pengaturan Data</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;">
+                    Reset seluruh jadwal kustom dan riwayat aplikasi.
+                </p>
+                <button class="btn btn-danger" onclick="resetAllData()"><i data-lucide="refresh-cw" style="width: 16px;"></i> Reset Semua Data</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="switchTab('timeline', this)">
+            <i data-lucide="calendar"></i>
+            <span>Jadwal</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('stats', this)">
+            <i data-lucide="bar-chart-2"></i>
+            <span>Statistik</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('settings', this)">
+            <i data-lucide="settings"></i>
+            <span>Opsi</span>
+        </button>
+    </nav>
+
+    <!-- Modal Edit Agenda -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <h3 id="modalTimeTitle"><i data-lucide="edit-3" style="width: 20px;"></i> Edit Agenda</h3>
+            <div class="form-group">
+                <label for="activityInput">Nama Kegiatan</label>
+                <input type="text" id="activityInput" placeholder="Contoh: Sarapan & Olahraga">
+            </div>
+            <div class="form-group">
+                <label for="categoryInput">Kategori</label>
+                <select id="categoryInput">
+                    <option value="routine">Rutinitas</option>
+                    <option value="work">Kerja</option>
+                    <option value="leisure">Santai</option>
+                    <option value="focus">Fokus</option>
+                    <option value="target">Target</option>
+                    <option value="ibadah">Ibadah</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="notesInput">Catatan (Opsional)</label>
+                <textarea id="notesInput" rows="3" placeholder="Contoh: Minum air putih 2 gelas"></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal()">Batal</button>
+                <button class="btn btn-primary" onclick="saveAgenda()">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Tambah Waktu Baru (Custom Waktu) -->
+    <div class="modal" id="addTimeModal">
+        <div class="modal-content">
+            <h3><i data-lucide="clock" style="width: 20px;"></i> Tambah Slot Waktu Kustom</h3>
+            <div class="form-group">
+                <label for="customTimeInput">Waktu (Format Jam / Teks)</label>
+                <input type="text" id="customTimeInput" placeholder="Contoh: 05.30 atau 05.30 - 06.00">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeAddTimeModal()">Batal</button>
+                <button class="btn btn-primary" onclick="addNewTimeSlot()">Tambah Waktu</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const defaultHours = [
+            "08.00", "09.00", "10.00", "11.00", "12.00", "13.00", 
+            "14.00", "15.00", "16.00", "17.00", "18.00", "19.00", 
+            "20.00", "21.00", "22.00", "23.00", "00.00", "01.00"
+        ];
+
+        const defaultTemplate = {
+            "08.00": { title: "Bangun Pagi & Jalan santai", notes: "Jalan santai pagi dan hirup udara segar", category: "routine" },
+            "09.00": { title: "Sarapan Pagi", notes: "Sarapan bergizi dan minum air putih", category: "routine" },
+            "12.00": { title: "Makan Siang & Istirahat", notes: "Jauhkan layar HP sebentar", category: "leisure" },
+            "19.00": { title: "Makan Malam & Evaluasi", notes: "Review pencapaian hari ini", category: "target" },
+            "22.00": { title: "Waktu Santai / Membaca", notes: "Hindari kafein & konten berat", category: "leisure" },
+            "23.00": { title: "Persiapan Tidur", notes: "Matikan lampu utama, aktifkan mode redup", category: "routine" }
+        };
+
+        const habitTargets = {
+            water: 8,
+            reading: 15,
+            fruit: 2,
+            steps: 6000,
+            exercise: 1
+        };
+
+        let selectedHourIndex = null;
+        const todayKey = new Date().toISOString().slice(0, 10);
+
+        let hours = JSON.parse(localStorage.getItem('myDailyHours')) || defaultHours;
+        let routineData = JSON.parse(localStorage.getItem('myDailyRoutine')) || defaultTemplate;
+        let completionHistory = JSON.parse(localStorage.getItem('myDailyCompletionHistory')) || {};
+        let habitHistory = JSON.parse(localStorage.getItem('myDailyHabitHistory')) || {};
+        let streak = parseInt(localStorage.getItem('myDailyStreak')) || 0;
+
+        // Migrasi Data
+        if (!completionHistory[todayKey]) completionHistory[todayKey] = {};
+        if (!habitHistory[todayKey]) habitHistory[todayKey] = { water: 0, reading: 0, fruit: 0, steps: 0, exercise: 0, exerciseType: "Fitnes" };
+
+        if (!localStorage.getItem('myDailyRoutine')) {
+            localStorage.setItem('myDailyRoutine', JSON.stringify(routineData));
+        }
+
+        function saveHistories() {
+            localStorage.setItem('myDailyCompletionHistory', JSON.stringify(completionHistory));
+            localStorage.setItem('myDailyHabitHistory', JSON.stringify(habitHistory));
+        }
+
+        function saveHours() {
+            localStorage.setItem('myDailyHours', JSON.stringify(hours));
+        }
+
+        function checkWindDownTime() {
+            const now = new Date();
+            const currentHour = now.getHours();
+            const currentMin = now.getMinutes();
+
+            const banner = document.getElementById('windDownBanner');
+            if ((currentHour === 23 && currentMin >= 30) || currentHour === 0 || currentHour === 1) {
+                banner.classList.add('active');
+            } else {
+                banner.classList.remove('active');
+            }
+        }
+
+        function changeExerciseType(value) {
+            if (value === 'Kustom') {
+                const customVal = prompt("Masukkan jenis olahraga Anda:", "Yoga / Pilates");
+                if (customVal && customVal.trim() !== '') {
+                    const select = document.getElementById('exerciseTypeSelect');
+                    const newOpt = document.createElement('option');
+                    newOpt.value = customVal.trim();
+                    newOpt.innerText = `Olahraga: ${customVal.trim()}`;
+                    newOpt.selected = true;
+                    select.appendChild(newOpt);
+                    value = customVal.trim();
+                } else {
+                    document.getElementById('exerciseTypeSelect').value = "Fitnes";
+                    value = "Fitnes";
+                }
+            }
+            
+            if (!habitHistory[todayKey]) habitHistory[todayKey] = { water: 0, reading: 0, fruit: 0, steps: 0, exercise: 0, exerciseType: value };
+            habitHistory[todayKey].exerciseType = value;
+            saveHistories();
+        }
+
+        function adjustHabit(type, delta) {
+            if (!habitHistory[todayKey]) habitHistory[todayKey] = { water: 0, reading: 0, fruit: 0, steps: 0, exercise: 0, exerciseType: "Fitnes" };
+            if (typeof habitHistory[todayKey][type] !== 'number') habitHistory[todayKey][type] = 0;
+            
+            habitHistory[todayKey][type] = Math.max(0, habitHistory[todayKey][type] + delta);
+            saveHistories();
+            updateHabitDisplays();
+            renderStats();
+        }
+
+        function updateHabitDisplays() {
+            const todayHabits = habitHistory[todayKey] || { water: 0, reading: 0, fruit: 0, steps: 0, exercise: 0, exerciseType: "Fitnes" };
+            document.getElementById('habit-water-val').innerText = `${todayHabits.water || 0}/${habitTargets.water}`;
+            document.getElementById('habit-reading-val').innerText = `${todayHabits.reading || 0}/${habitTargets.reading}`;
+            document.getElementById('habit-fruit-val').innerText = `${todayHabits.fruit || 0}/${habitTargets.fruit}`;
+            
+            const currentSteps = todayHabits.steps || 0;
+            const formattedSteps = currentSteps >= 1000 ? (currentSteps / 1000).toFixed(currentSteps % 1000 === 0 ? 0 : 1) + 'k' : currentSteps;
+            document.getElementById('habit-steps-val').innerText = `${formattedSteps}/6k`;
+
+            // Display Durasi Olahraga
+            const currentExercise = todayHabits.exercise || 0;
+            document.getElementById('habit-exercise-val').innerText = `${currentExercise}/${habitTargets.exercise} Jam`;
+
+            // Sync Opsi Jenis Olahraga
+            if (todayHabits.exerciseType) {
+                const select = document.getElementById('exerciseTypeSelect');
+                let exists = Array.from(select.options).some(opt => opt.value === todayHabits.exerciseType);
+                if (!exists) {
+                    const newOpt = document.createElement('option');
+                    newOpt.value = todayHabits.exerciseType;
+                    newOpt.innerText = `Olahraga: ${todayHabits.exerciseType}`;
+                    select.appendChild(newOpt);
+                }
+                select.value = todayHabits.exerciseType;
+            }
+        }
+
+        function renderTimeline() {
+            const container = document.getElementById('timeline');
+            container.innerHTML = '';
+
+            const now = new Date();
+            const currentHour = now.getHours();
+
+            let totalAgenda = 0;
+            let completedAgenda = 0;
+            const todayItems = completionHistory[todayKey] || {};
+
+            hours.forEach((time, index) => {
+                const parsedHour = parseInt(time.split('.')[0]);
+                const isNow = !isNaN(parsedHour) && parsedHour === currentHour;
+                const isCompleted = todayItems[time] || false;
+
+                const data = routineData[time] || { title: '', notes: '', category: 'routine' };
+                const hasActivity = data.title && data.title.trim() !== '';
+
+                if (hasActivity) {
+                    totalAgenda++;
+                    if (isCompleted) completedAgenda++;
+                }
+
+                const slot = document.createElement('div');
+                slot.className = `time-slot ${isNow ? 'now' : ''} ${isCompleted ? 'completed' : ''}`;
+                
+                slot.onclick = (e) => {
+                    if (!e.target.closest('.btn-edit') && !e.target.closest('.btn-delete-time') && hasActivity) {
+                        toggleComplete(time);
+                    }
+                };
+
+                const catTag = data.category || 'routine';
+                const catLabels = { 
+                    routine: 'Rutinitas', 
+                    work: 'Kerja', 
+                    leisure: 'Santai', 
+                    focus: 'Fokus', 
+                    target: 'Target', 
+                    ibadah: 'Ibadah' 
+                };
+
+                slot.innerHTML = `
+                    <div class="checkbox-custom">
+                        ${isCompleted ? '<i data-lucide="check" style="width: 14px; stroke-width: 3;"></i>' : ''}
+                    </div>
+                    <div class="time-label">${time}</div>
+                    <div class="slot-content">
+                        ${hasActivity ? `
+                            <div class="slot-header-tags">
+                                <span class="category-tag tag-${catTag}">${catLabels[catTag] || catTag}</span>
+                            </div>
+                        ` : ''}
+                        <div class="slot-title" style="color: ${hasActivity ? 'var(--text-color)' : 'var(--text-muted)'}">
+                            ${hasActivity ? data.title : 'Kosong (Klik pensil untuk mengisi)'}
+                        </div>
+                        ${data.notes ? `<div class="slot-notes">${data.notes}</div>` : ''}
+                    </div>
+                    <div class="slot-actions">
+                        <button class="btn-edit" onclick="openModal(${index}); event.stopPropagation();" title="Edit Agenda">
+                            <i data-lucide="pencil" style="width: 16px;"></i>
+                        </button>
+                        <button class="btn-delete-time" onclick="deleteTimeSlot('${time}'); event.stopPropagation();" title="Hapus Waktu">
+                            <i data-lucide="trash" style="width: 16px;"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(slot);
+            });
+
+            updateProgress(totalAgenda, completedAgenda);
+            updateHabitDisplays();
+            checkWindDownTime();
+            document.getElementById('streakCount').innerText = `${streak} Hari`;
+            document.getElementById('statStreak').innerText = streak;
+            lucide.createIcons();
+        }
+
+        /* FITUR TAMBAH & HAPUS CUSTOM WAKTU */
+        function openAddTimeModal() {
+            document.getElementById('customTimeInput').value = '';
+            document.getElementById('addTimeModal').classList.add('active');
+        }
+
+        function closeAddTimeModal() {
+            document.getElementById('addTimeModal').classList.remove('active');
+        }
+
+        function addNewTimeSlot() {
+            const timeVal = document.getElementById('customTimeInput').value.trim();
+            if (!timeVal) {
+                alert("Silakan masukkan format waktu (contoh: 05.30).");
+                return;
+            }
+
+            if (hours.includes(timeVal)) {
+                alert("Slot waktu tersebut sudah ada di daftar.");
+                return;
+            }
+
+            hours.push(timeVal);
+            saveHours();
+            renderTimeline();
+            renderStats();
+            closeAddTimeModal();
+        }
+
+        function deleteTimeSlot(timeVal) {
+            if (confirm(`Apakah Anda yakin ingin menghapus slot waktu ${timeVal}?`)) {
+                hours = hours.filter(h => h !== timeVal);
+                delete routineData[timeVal];
+                
+                if (completionHistory[todayKey]) {
+                    delete completionHistory[todayKey][timeVal];
+                }
+
+                saveHours();
+                localStorage.setItem('myDailyRoutine', JSON.stringify(routineData));
+                saveHistories();
+                renderTimeline();
+                renderStats();
+            }
+        }
+
+        function toggleComplete(time) {
+            if (!completionHistory[todayKey]) completionHistory[todayKey] = {};
+            completionHistory[todayKey][time] = !completionHistory[todayKey][time];
+            saveHistories();
+            renderTimeline();
+            renderStats();
+        }
+
+        function updateProgress(total, completed) {
+            const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+            document.getElementById('progressBar').style.width = `${percentage}%`;
+            document.getElementById('progressPercent').innerText = `${percentage}%`;
+
+            const evalText = document.getElementById('evalText');
+            if (percentage >= 80) {
+                evalText.innerText = "Luar biasa! Rutinitas Anda berjalan sangat baik hari ini. Siap untuk tidur tepat waktu!";
+            } else if (percentage >= 50) {
+                evalText.innerText = "Progres bagus! Usahakan menyelesaikan sisa kegiatan sebelum waktu tidur.";
+            } else {
+                evalText.innerText = "Fokus bertahap. Coba selesaikan minimal 3-4 kegiatan utama hari ini.";
+            }
+        }
+
+        function getDateRange(rangeType) {
+            const dates = [];
+            const today = new Date();
+
+            if (rangeType === 'today') {
+                dates.push(today.toISOString().slice(0, 10));
+            } else if (rangeType === 'yesterday') {
+                const y = new Date();
+                y.setDate(today.getDate() - 1);
+                dates.push(y.toISOString().slice(0, 10));
+            } else {
+                let days = 7;
+                if (rangeType === 'month') days = 30;
+                if (rangeType === 'year') days = 365;
+
+                for (let i = 0; i < days; i++) {
+                    const d = new Date();
+                    d.setDate(today.getDate() - i);
+                    dates.push(d.toISOString().slice(0, 10));
+                }
+            }
+            return dates;
+        }
+
+        function renderStats() {
+            const filterValue = document.getElementById('timeRangeFilter').value;
+            const categoryValue = document.getElementById('categoryFilter').value;
+            const targetDates = getDateRange(filterValue);
+
+            let totalSteps = 0;
+            let totalFruit = 0;
+            let totalWater = 0;
+            let totalReading = 0;
+            let totalExercise = 0;
+            let completedAgendas = 0;
+            let totalAgendasPossible = 0;
+
+            const activeAgendaTimes = Object.keys(routineData).filter(time => {
+                const item = routineData[time];
+                const hasTitle = item && item.title && item.title.trim() !== '';
+                const matchesCat = (categoryValue === 'all') || (item.category === categoryValue);
+                return hasTitle && matchesCat;
+            });
+
+            const activeAgendaCount = activeAgendaTimes.length;
+
+            targetDates.forEach(d => {
+                if (habitHistory[d]) {
+                    totalSteps += (habitHistory[d].steps || 0);
+                    totalFruit += (habitHistory[d].fruit || 0);
+                    totalWater += (habitHistory[d].water || 0);
+                    totalReading += (habitHistory[d].reading || 0);
+                    totalExercise += (habitHistory[d].exercise || 0);
+                }
+
+                if (completionHistory[d]) {
+                    activeAgendaTimes.forEach(time => {
+                        if (completionHistory[d][time]) {
+                            completedAgendas++;
+                        }
+                    });
+                }
+                totalAgendasPossible += activeAgendaCount;
+            });
+
+            document.getElementById('completedCount').innerText = `${completedAgendas}/${totalAgendasPossible}`;
+            document.getElementById('summarySteps').innerText = totalSteps >= 1000 ? (totalSteps / 1000).toFixed(1) + 'k' : totalSteps;
+            document.getElementById('summaryExercise').innerText = `${totalExercise} Jam`;
+            document.getElementById('summaryFruit').innerText = `${totalFruit} Porsi`;
+            document.getElementById('summaryWater').innerText = `${totalWater} Gelas`;
+            document.getElementById('summaryReading').innerText = `${totalReading} Hal`;
+            document.getElementById('statStreak').innerText = streak;
+            lucide.createIcons();
+        }
+
+        function switchTab(tabName, el) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            el.classList.add('active');
+
+            if (tabName === 'stats') {
+                renderStats();
+            }
+        }
+
+        function openModal(index) {
+            selectedHourIndex = index;
+            const time = hours[index];
+            const data = routineData[time] || { title: '', notes: '', category: 'routine' };
+
+            document.getElementById('modalTimeTitle').innerHTML = `<i data-lucide="edit-3" style="width:20px;"></i> Edit Agenda ${time}`;
+            document.getElementById('activityInput').value = data.title || '';
+            document.getElementById('notesInput').value = data.notes || '';
+            document.getElementById('categoryInput').value = data.category || 'routine';
+            
+            document.getElementById('editModal').classList.add('active');
+            lucide.createIcons();
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').classList.remove('active');
+        }
+
+        function saveAgenda() {
+            const time = hours[selectedHourIndex];
+            const title = document.getElementById('activityInput').value.trim();
+            const notes = document.getElementById('notesInput').value.trim();
+            const category = document.getElementById('categoryInput').value;
+
+            if (title) {
+                routineData[time] = { title, notes, category };
+            } else {
+                delete routineData[time];
+            }
+
+            localStorage.setItem('myDailyRoutine', JSON.stringify(routineData));
+            renderTimeline();
+            renderStats();
+            closeModal();
+        }
+
+        function requestNotification() {
+            if ("Notification" in window) {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        alert("Notifikasi diizinkan! Aplikasi akan memberikan pengingat di jam tidur.");
+                    }
+                });
+            } else {
+                alert("Browser Anda tidak mendukung fitur Notifikasi.");
+            }
+        }
+
+        function exportData() {
+            const data = {
+                hours,
+                routineData,
+                completionHistory,
+                habitHistory,
+                streak
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `routine_backup_${todayKey}.json`;
+            a.click();
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (imported.hours) {
+                        hours = imported.hours;
+                        saveHours();
+                    }
+                    if (imported.routineData) {
+                        routineData = imported.routineData;
+                        localStorage.setItem('myDailyRoutine', JSON.stringify(routineData));
+                    }
+                    if (imported.completionHistory) {
+                        completionHistory = imported.completionHistory;
+                        localStorage.setItem('myDailyCompletionHistory', JSON.stringify(completionHistory));
+                    }
+                    if (imported.habitHistory) {
+                        habitHistory = imported.habitHistory;
+                        localStorage.setItem('myDailyHabitHistory', JSON.stringify(habitHistory));
+                    }
+                    if (typeof imported.streak === 'number') {
+                        streak = imported.streak;
+                        localStorage.setItem('myDailyStreak', streak);
+                    }
+                    renderTimeline();
+                    renderStats();
+                    alert("Data berhasil diimpor!");
+                } catch (err) {
+                    alert("Format berkas JSON tidak valid.");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function resetAllData() {
+            if (confirm("Apakah Anda yakin ingin menghapus seluruh agenda dan reset aplikasi?")) {
+                localStorage.clear();
+                hours = defaultHours;
+                routineData = {};
+                completionHistory = {};
+                habitHistory = {};
+                streak = 0;
+                
+                completionHistory[todayKey] = {};
+                habitHistory[todayKey] = { water: 0, reading: 0, fruit: 0, steps: 0, exercise: 0, exerciseType: "Fitnes" };
+                
+                saveHours();
+                renderTimeline();
+                renderStats();
+                alert("Seluruh data berhasil dibersihkan.");
+            }
+        }
+
+        // Render Awal
+        renderTimeline();
+    </script>
+    
+  <script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js");
+  });
+}
+</script>
+</body>
+</html>
